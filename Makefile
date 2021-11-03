@@ -1,5 +1,10 @@
-pixelflut-c: main.o
-	gcc -o pixelflut-c main.o
+CC = gcc -g
+
+pixelflut-c: main.o pixelflut.o
+	$(CC) -o pixelflut-c main.o pixelflut.o
 
 main.o: main.c
-	gcc -c main.c -o main.o
+	$(CC) -c main.c -o main.o
+
+pixelflut.o: pixelflut.c
+	$(CC) -c pixelflut.c -o pixelflut.o
