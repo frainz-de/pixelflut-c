@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-// #include "pixelflut.h"
+#include "pixelflut.h"
 
 int main(void)
 {
