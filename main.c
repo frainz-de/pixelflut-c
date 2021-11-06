@@ -7,7 +7,7 @@ int main(void)
 {
     printf("This is supposed to become a pixelflut client in C.\n");
 
-    int retval = pixelflut("141.24.52.16", 1234);
+    int retval = pixelflut("127.0.0.1", 1337);
 
     if (retval) {
         printf("Something went wronk\n");
