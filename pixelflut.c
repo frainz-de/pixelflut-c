@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <stdio.h>
 
+#define MAXRCVLEN 500
+
 int pixelflut(char* dest_str, int port)
 {
     struct sockaddr_in dest;
@@ -23,5 +25,13 @@ int pixelflut(char* dest_str, int port)
         printf("\n");
         return -1;
     }
+
+    size_t sentsize = send(mysocket, "SIZE\n", 5, 0);
+
+    char buffer[MAXRCVLEN + 1];
+    int recvlen = recv(mysocket, buffer, MAXRCVLEN, 0);
+    buffer[recvlen] = '\0';
+
+    return 0;
 
 }
