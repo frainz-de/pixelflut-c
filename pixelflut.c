@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAXRCVLEN 500
 
@@ -28,9 +29,16 @@ int pixelflut(char* dest_str, int port)
 
     size_t sentsize = send(mysocket, "SIZE\n", 5, 0);
 
-    char buffer[MAXRCVLEN + 1];
-    int recvlen = recv(mysocket, buffer, MAXRCVLEN, 0);
-    buffer[recvlen] = '\0';
+    char recvbuffer[MAXRCVLEN + 1];
+    int recvlen = recv(mysocket, recvbuffer, MAXRCVLEN, 0);
+    recvbuffer[recvlen] = '\0';
+
+    char* widthPointer = strchr(recvbuffer, ' ') + 1;
+    int canvasWidth = atoi(widthPointer);
+    char* heightPointer = strchr(widthPointer, ' ') + 1;
+    int canvasHeight = atoi(heightPointer);
+
+    printf("Canvas size is %i x %i\n.", canvasWidth, canvasHeight);
 
     return 0;
 
