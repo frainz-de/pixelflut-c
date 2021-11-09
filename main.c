@@ -3,8 +3,10 @@
 
 #include "pixelflut.h"
 
-int main(void)
-{
+int main(int argc, char* argv[]) {
+
+    // parse arguments with getopt
+
     printf("This is supposed to become a pixelflut client in C.\n");
 
     int retval = pixelflut("127.0.0.1", 1337, "singlepixel.px");
