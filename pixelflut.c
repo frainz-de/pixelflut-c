@@ -33,7 +33,9 @@ int pixelflut(char* dest_str, int port)
     int recvlen = recv(mysocket, recvbuffer, MAXRCVLEN, 0);
     recvbuffer[recvlen] = '\0';
 
-    char* widthPointer = strchr(recvbuffer, ' ') + 1;
+    // parse "SIZE <width> <height>"
+    // get pointers to the beginning of numbers and put these into atoi
+    char* widthPointer = strchr(recvbuffer, ' ') + 1; // the char after the space is the beginning of the number
     int canvasWidth = atoi(widthPointer);
     char* heightPointer = strchr(widthPointer, ' ') + 1;
     int canvasHeight = atoi(heightPointer);
