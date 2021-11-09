@@ -8,15 +8,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXRCVLEN 500
+#define MAXRCVLEN 30
 
-int pixelflut(char* dest_str, int port)
-{
+int connectToIpPort(char* ip_str, int port) {
     struct sockaddr_in dest;
     memset(&dest, 0, sizeof(dest)); 
     dest.sin_family = AF_INET;
 
-    inet_aton(dest_str, &dest.sin_addr);
+    inet_aton(ip_str, &dest.sin_addr);
     dest.sin_port = htons(port);
 
     int mysocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -27,21 +26,45 @@ int pixelflut(char* dest_str, int port)
         return -1;
     }
 
-    size_t sentsize = send(mysocket, "SIZE\n", 5, 0);
+    return mysocket;
+
+}
+
+int getCanvasSize(int socket, int* width, int* height) {
+
+    size_t sentsize = send(socket, "SIZE\n", 5, 0);
+    if(sentsize < 0) {
+        return sentsize;
+    }
 
     char recvbuffer[MAXRCVLEN + 1];
-    int recvlen = recv(mysocket, recvbuffer, MAXRCVLEN, 0);
+    int recvlen = recv(socket, recvbuffer, MAXRCVLEN, 0);
+    if(recvlen < 0) {
+        return recvlen;
+    }
     recvbuffer[recvlen] = '\0';
 
     // parse "SIZE <width> <height>"
     // get pointers to the beginning of numbers and put these into atoi
     char* widthPointer = strchr(recvbuffer, ' ') + 1; // the char after the space is the beginning of the number
-    int canvasWidth = atoi(widthPointer);
+    *width = atoi(widthPointer);
     char* heightPointer = strchr(widthPointer, ' ') + 1;
-    int canvasHeight = atoi(heightPointer);
-
-    printf("Canvas size is %i x %i\n.", canvasWidth, canvasHeight);
+    *height = atoi(heightPointer);
 
     return 0;
+}
 
+int pixelflut(char* dest_str, int port, char* sentfile) {
+    int mysocket = connectToIpPort(dest_str, port);
+    if(mysocket < 0) {
+        return mysocket;
+    }
+    
+    int canvasWidth, canvasHeight;
+    if(getCanvasSize(mysocket, &canvasWidth, &canvasHeight) < 0) {
+        return -1;
+    }
+    printf("Canvas size is %i x %i.\n", canvasWidth, canvasHeight);
+
+    return 0;
 }
