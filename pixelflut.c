@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/sendfile.h>
 
 #define MAXRCVLEN 30
 
@@ -54,6 +55,15 @@ int getCanvasSize(int socket, int* width, int* height) {
     return 0;
 }
 
+int getSentFd(char* filename) {
+    if(filename=="-") {
+        FILE* file = fopen(filename, "r");
+        return fileno(file);
+    } else {
+        return fileno(stdin);
+    }
+}
+
 int pixelflut(char* dest_str, int port, char* sentfile) {
     int mysocket = connectToIpPort(dest_str, port);
     if(mysocket < 0) {
@@ -65,6 +75,16 @@ int pixelflut(char* dest_str, int port, char* sentfile) {
         return -1;
     }
     printf("Canvas size is %i x %i.\n", canvasWidth, canvasHeight);
+
+    int fd = getSentFd(sentfile);   
+    if(fd < 0) {
+        return fd;
+    }
+
+    int sentbytes = sendfile(mysocket, fd, NULL, 50);
+    if(sentbytes < 0) {
+        return -1;
+    }
 
     return 0;
 }
